@@ -1,3 +1,9 @@
+function setVarToPin () {
+    forwardButton = pins.digitalReadPin(DigitalPin.P15)
+    backwardButton = pins.digitalReadPin(DigitalPin.P13)
+    rightButton = pins.digitalReadPin(DigitalPin.P14)
+    leftButton = pins.digitalReadPin(DigitalPin.P16)
+}
 function incramental () {
     if (forwardButton == 0) {
         radio.sendString("slowForward")
@@ -140,6 +146,12 @@ function buttonCheck () {
         sendStop()
     }
 }
+function setPin () {
+    pins.setPull(DigitalPin.P13, PinPullMode.PullUp)
+    pins.setPull(DigitalPin.P14, PinPullMode.PullUp)
+    pins.setPull(DigitalPin.P15, PinPullMode.PullUp)
+    pins.setPull(DigitalPin.P16, PinPullMode.PullUp)
+}
 let leftButton = 0
 let rightButton = 0
 let backwardButton = 0
@@ -149,16 +161,10 @@ forwardButton = 1
 backwardButton = 1
 rightButton = 1
 leftButton = 1
-pins.setPull(DigitalPin.P13, PinPullMode.PullUp)
-pins.setPull(DigitalPin.P14, PinPullMode.PullUp)
-pins.setPull(DigitalPin.P15, PinPullMode.PullUp)
-pins.setPull(DigitalPin.P16, PinPullMode.PullUp)
 let stickControl = false
+setPin()
 basic.forever(function () {
-    forwardButton = pins.digitalReadPin(DigitalPin.P15)
-    backwardButton = pins.digitalReadPin(DigitalPin.P13)
-    rightButton = pins.digitalReadPin(DigitalPin.P14)
-    leftButton = pins.digitalReadPin(DigitalPin.P16)
+    setVarToPin()
     if (input.buttonIsPressed(Button.A)) {
         if (stickControl) {
             stickControl = false
