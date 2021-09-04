@@ -12,6 +12,7 @@ def setPins():
     pins.set_pull(DigitalPin.P14, PinPullMode.PULL_UP)
     pins.set_pull(DigitalPin.P16, PinPullMode.PULL_UP)
 def setVarsToPins():
+    global forwardButton, backwardButton, rightButton, leftButton
     if pins.digital_read_pin(DigitalPin.P15) == 0:
         forwardButton = True
     elif pins.digital_read_pin(DigitalPin.P13) == 0:
@@ -21,21 +22,22 @@ def setVarsToPins():
     elif pins.digital_read_pin(DigitalPin.P16) == 0:
         leftButton = True
 def incremental():
+    global forwardButton, backwardButton, rightButton, leftButton
     setVarsToPins()
-    if forwardButton == 0:
-        radio.send_string("200")
-        basic.show_leds("""
-            . . # . .
-            . # . # .
-            # . . . #
-            . . . . .
-            . . . . .
-        """)
-        basic.pause(100)
-        forwardButton = 1
-    elif backwardButton == 0:
+    if forwardButton:
         radio.send_string("300")
-        backwardButton = 1
+        basic.show_leds("""
+            . . # . .
+            . # . # .
+            # . . . #
+            . . . . .
+            . . . . .
+        """)
+        basic.pause(100)
+        forwardButton = False
+    elif backwardButton:
+        radio.send_string("400")
+        backwardButton = False
         basic.show_leds("""
             . . . . .
             . . . . .
@@ -44,9 +46,9 @@ def incremental():
             . . # . .
         """)
         basic.pause(100)
-    elif rightButton == 0:
-        radio.send_string("100")
-        rightButton = 1
+    elif rightButton:
+        radio.send_string("200")
+        rightButton = False
         basic.show_leds("""
             . . # . .
             . . . # .
@@ -55,9 +57,9 @@ def incremental():
             . . # . .
         """)
         basic.pause(100)
-    elif leftButton == 0:
-        radio.send_string("000")
-        leftButton = 1
+    elif leftButton:
+        radio.send_string("100")
+        leftButton = False
         basic.show_leds("""
             . . # . .
             . # . . .
@@ -120,10 +122,11 @@ def showButtons():
     """)
 
 def buttonCheck():
+    global forwardButton, backwardButton, rightButton, leftButton
     setVarsToPins()
-    if forwardButton == 0:
+    if forwardButton:
         radio.send_string("310")
-        forwardButton = 1
+        forwardButton = False
         basic.show_leds("""
             . . # . .
             . # # # .
@@ -132,9 +135,9 @@ def buttonCheck():
             . . # . .
         """)
         basic.pause(100)
-    elif backwardButton == 0:
+    elif backwardButton:
         radio.send_string("410")
-        backwardButton = 1
+        backwardButton = False
         basic.show_leds("""
             . . # . .
             . . # . .
@@ -143,9 +146,8 @@ def buttonCheck():
             . . # . .
         """)
         basic.pause(100)
-    elif rightButton == 0:
+    elif rightButton:
         radio.send_string("210")
-        rightButton = 1
         basic.show_leds("""
             . . # . .
             . . . # .
@@ -154,9 +156,10 @@ def buttonCheck():
             . . # . .
         """)
         basic.pause(100)
-    elif leftButton == 0:
-        radio.send_string("110")
-        leftButton = 1
+        rightButton = False
+    elif leftButton:
+        radio.send_string(LEFT+"10")
+        
         basic.show_leds("""
             . . # . .
             . # . . .
@@ -165,39 +168,31 @@ def buttonCheck():
             . . # . .
         """)
         basic.pause(100)
+        leftButton = False
     else:
         sendStop()
 
-leftButton = 0
-rightButton = 0
-backwardButton = 0
-forwardButton = 0
-LEFT = 0
-DAMAGE = 0
-BACKWARD = 0
-FORWARD = 0
-RIGHT = 0
-
-LEFT = 1
-RIGHT = 2
-FORWARD = 3
-BACKWARD = 4
-DAMAGE = 5
-leftButton = 1
-rightButton = 1
-backwardButton = 1
-forwardButton = 1
+leftButton = False
+rightButton = False
+backwardButton = False
+forwardButton = False
+stickControl = False
+LEFT = "1"
+RIGHT = "2"
+FORWARD = "3"
+BACKWARD = "4"
+DAMAGE = "5"
 radio.set_group(1)
 setPins()
 
 def on_forever():
-    stickControl = False
+    global stickControl
     if input.button_is_pressed(Button.A):
-        if stickControl == True:
+        if stickControl:
             stickControl = False
         else:
             stickControl = True
-    if stickControl == True:
+    if stickControl:
         showStick()
         stickCheck()
     elif input.button_is_pressed(Button.B):
