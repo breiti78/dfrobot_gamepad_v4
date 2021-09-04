@@ -1,3 +1,9 @@
+LEFT = 0
+RIGHT = 1
+FORWARD = 2
+BACKWARD = 3
+DAMAGE = 4
+
 def showStick():
     basic.show_leds("""
         . # # # .
@@ -10,7 +16,7 @@ def incramental():
     global forwardButton, backwardButton, rightButton, leftButton
     setVarsToPins()
     if forwardButton == 0:
-        radio.send_string("littleForward")
+        radio.send_string("200")
         basic.show_leds("""
             . . # . .
             . # . # .
@@ -21,7 +27,7 @@ def incramental():
         basic.pause(100)
         forwardButton = 1
     elif backwardButton == 0:
-        radio.send_string("littleBackward")
+        radio.send_string("300")
         backwardButton = 1
         basic.show_leds("""
             . . . . .
@@ -32,7 +38,7 @@ def incramental():
         """)
         basic.pause(100)
     elif rightButton == 0:
-        radio.send_string("littleRight")
+        radio.send_string("100")
         rightButton = 1
         basic.show_leds("""
             . . # . .
@@ -43,7 +49,7 @@ def incramental():
         """)
         basic.pause(100)
     elif leftButton == 0:
-        radio.send_string("littleLeft")
+        radio.send_string("000")
         leftButton = 1
         basic.show_leds("""
             . . # . .
@@ -135,7 +141,7 @@ def buttonCheck():
     global forwardButton, backwardButton, rightButton, leftButton
     setVarsToPins()
     if forwardButton == 0:
-        radio.send_string("oneForward")
+        radio.send_string("210")
         forwardButton = 1
         basic.show_leds("""
             . . # . .
@@ -146,7 +152,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif backwardButton == 0:
-        radio.send_string("oneBackward")
+        radio.send_string("310")
         backwardButton = 1
         basic.show_leds("""
             . . # . .
@@ -157,7 +163,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif rightButton == 0:
-        radio.send_string("oneRight")
+        radio.send_string("110")
         rightButton = 1
         basic.show_leds("""
             . . # . .
@@ -168,7 +174,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif leftButton == 0:
-        radio.send_string("oneLeft")
+        radio.send_string("010")
         leftButton = 1
         basic.show_leds("""
             . . # . .
