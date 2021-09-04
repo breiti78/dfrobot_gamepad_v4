@@ -1,9 +1,3 @@
-LEFT = 0
-RIGHT = 1
-FORWARD = 2
-BACKWARD = 3
-DAMAGE = 4
-
 def showStick():
     basic.show_leds("""
         . # # # .
@@ -12,8 +6,21 @@ def showStick():
         . . # . .
         . . # . .
     """)
-def incramental():
-    global forwardButton, backwardButton, rightButton, leftButton
+def setPins():
+    pins.set_pull(DigitalPin.P15, PinPullMode.PULL_UP)
+    pins.set_pull(DigitalPin.P13, PinPullMode.PULL_UP)
+    pins.set_pull(DigitalPin.P14, PinPullMode.PULL_UP)
+    pins.set_pull(DigitalPin.P16, PinPullMode.PULL_UP)
+def setVarsToPins():
+    if pins.digital_read_pin(DigitalPin.P15) == 0:
+        forwardButton = True
+    elif pins.digital_read_pin(DigitalPin.P13) == 0:
+        backwardButton = True
+    elif pins.digital_read_pin(DigitalPin.P14) == 0:
+        rightButton = True
+    elif pins.digital_read_pin(DigitalPin.P16) == 0:
+        leftButton = True
+def incremental():
     setVarsToPins()
     if forwardButton == 0:
         radio.send_string("200")
@@ -102,12 +109,7 @@ def stickCheck():
         sendStop()
 def sendStop():
     radio.send_string("S")
-def setVarsToPins():
-    global forwardButton, backwardButton, rightButton, leftButton
-    forwardButton = pins.digital_read_pin(DigitalPin.P15)
-    backwardButton = pins.digital_read_pin(DigitalPin.P13)
-    rightButton = pins.digital_read_pin(DigitalPin.P14)
-    leftButton = pins.digital_read_pin(DigitalPin.P16)
+
 def showButtons():
     basic.show_leds("""
         . # # # .
@@ -116,32 +118,11 @@ def showButtons():
         # . # . #
         . # # # .
     """)
-def setPins():
-    pins.set_pull(DigitalPin.P15, PinPullMode.PULL_UP)
-    pins.set_pull(DigitalPin.P13, PinPullMode.PULL_UP)
-    pins.set_pull(DigitalPin.P14, PinPullMode.PULL_UP)
-    pins.set_pull(DigitalPin.P16, PinPullMode.PULL_UP)
-def loop():
-    global stickControl
-    if input.button_is_pressed(Button.A):
-        if stickControl:
-            stickControl = False
-        else:
-            stickControl = True
-    if stickControl:
-        showStick()
-        stickCheck()
-    elif input.button_is_pressed(Button.B):
-        showButtons()
-        incramental()
-    else:
-        showButtons()
-        buttonCheck()
+
 def buttonCheck():
-    global forwardButton, backwardButton, rightButton, leftButton
     setVarsToPins()
     if forwardButton == 0:
-        radio.send_string("210")
+        radio.send_string("310")
         forwardButton = 1
         basic.show_leds("""
             . . # . .
@@ -152,7 +133,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif backwardButton == 0:
-        radio.send_string("310")
+        radio.send_string("410")
         backwardButton = 1
         basic.show_leds("""
             . . # . .
@@ -163,7 +144,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif rightButton == 0:
-        radio.send_string("110")
+        radio.send_string("210")
         rightButton = 1
         basic.show_leds("""
             . . # . .
@@ -174,7 +155,7 @@ def buttonCheck():
         """)
         basic.pause(100)
     elif leftButton == 0:
-        radio.send_string("010")
+        radio.send_string("110")
         leftButton = 1
         basic.show_leds("""
             . . # . .
@@ -186,15 +167,43 @@ def buttonCheck():
         basic.pause(100)
     else:
         sendStop()
+
 leftButton = 0
 rightButton = 0
 backwardButton = 0
 forwardButton = 0
-stickControl = False
+LEFT = 0
+DAMAGE = 0
+BACKWARD = 0
+FORWARD = 0
+RIGHT = 0
+
+LEFT = 1
+RIGHT = 2
+FORWARD = 3
+BACKWARD = 4
+DAMAGE = 5
+leftButton = 1
+rightButton = 1
+backwardButton = 1
+forwardButton = 1
 radio.set_group(1)
-stickControl = False
 setPins()
 
 def on_forever():
-    loop()
+    stickControl = False
+    if input.button_is_pressed(Button.A):
+        if stickControl == True:
+            stickControl = False
+        else:
+            stickControl = True
+    if stickControl == True:
+        showStick()
+        stickCheck()
+    elif input.button_is_pressed(Button.B):
+        showButtons()
+        incremental()
+    else:
+        showButtons()
+        buttonCheck()
 basic.forever(on_forever)
