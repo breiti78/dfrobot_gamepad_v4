@@ -86,6 +86,9 @@ function buttonCheck () {
     	
     }
 }
+radio.onReceivedValue(function (name, value) {
+    serial.writeValue(name, value)
+})
 let last_button = ""
 let y = 0
 let x = 0
